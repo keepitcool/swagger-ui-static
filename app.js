@@ -1,53 +1,51 @@
 #!/usr/bin/env node
 
-var express = require('express');
-var fs = require('fs');
-var serveIndex = require('serve-index');
-var program = require('commander');
-var app = express();
+const express = require('express')
+const fs = require('fs')
+const serveIndex = require('serve-index')
+const program = require('commander')
+const path  = require('path')
+
+const app = express()
 
 program
-    .version('0.3.0')
+    .version(require('./package.json').version)
     .option('-p, --port <n>', 'port', parseInt)
-    .parse(process.argv);
+    .option('-d, --dir <n>', 'root directory')
+    .parse(process.argv)
 
-var port = program.port || 3000;
+const port = program.port || process.env['PORT'] || 3000
+const dir = path.join(program.dir || process.env['ROOT_DIR'] || process.cwd(), '/')
 
-var isRootSwagger = false;
-
-try {
-    isRootSwagger = fs.statSync(process.cwd() + '/swagger.json').isFile();
-} catch (e) {
-
-}
-
+const signals = ['SIGTERM', 'SIGINT']
+signals.forEach(signal => {
+    process.on(signal, () => {
+        process.exit(0)
+    })
+})
 
 app.get('/', function (req, res) {
-    if (isRootSwagger) {
-        res.redirect('/swagger?url=../raw/swagger.json');
-    } else {
-        res.redirect('/list');
-    }
-});
+    res.redirect('/list')
+})
 
-app.use('/swagger', express.static(__dirname + '/swagger'));
-app.use('/raw', express.static(process.cwd() + '/'));
+app.use('/swagger', express.static(__dirname + '/swagger'))
+app.use('/raw', express.static(dir))
 app.use('/list', function (req, res, next) {
-    var filepath = process.cwd() + '/' + req.path;
+    const filepath = path.join(dir, '/', req.path)
 
     fs.stat(filepath, function (err, stats) {
-        if (err) return next();
+        if (err) return next()
 
         if (stats.isFile()) {
-            res.redirect('/swagger?url=../raw/' + req.path);
-            return;
+            res.redirect('/swagger?url=../raw/' + req.path)
+            return
         }
-        next();
-    });
-});
+        next()
+    })
+})
 
-app.use('/list', serveIndex(process.cwd() + '/', {'icons': true}))
+app.use('/list', serveIndex(dir, {'icons': true}))
 
-app.listen(port);
+app.listen(port)
 
-console.log('Running on port ' + port);
+console.log('Running on port ' + port)

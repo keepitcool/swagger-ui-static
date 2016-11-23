@@ -1,6 +1,6 @@
 {
   "name": "swagger-ui-static",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "KeepItCool",
   "bin": {
     "swagger-static": "./app.js"
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "commander": "2.9.0",
-    "express": "4.13.4",
-    "serve-index": "1.7.3"
+    "express": "4.14.0",
+    "serve-index": "1.8.0"
   },
   "main": "./app.js",
   "license": "MIT"
