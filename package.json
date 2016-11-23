@@ -1,6 +1,6 @@
 {
   "name": "swagger-ui-static",
-  "version": "0.2.0",
+  "version": "2.2.6",
   "author": "KeepItCool",
   "bin": {
     "swagger-static": "./app.js"
