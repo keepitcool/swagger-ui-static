@@ -10,6 +10,7 @@ ENV ROOT_DIR /files
 COPY package.json /app/
 RUN npm install
 
-COPY app.js swagger /app/
+COPY app.js /app/
+COPY swagger /app/swagger
 
 CMD ["node", "app.js"]
